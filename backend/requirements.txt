@@ -1,0 +1,12 @@
+
+langchain
+langchain-community
+langchain-core
+langchain-google-genai
+langchain-qdrant
+qdrant-client
+langchain-text-splitters
+pypdf
+python-dotenv
+rank-bm25
+flashrank
