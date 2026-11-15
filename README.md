@@ -1,1 +1,230 @@
-"# enterprise_rag_assistant" 
+# 🚀 Enterprise RAG Assistant
+
+An advanced, production-grade **Retrieval-Augmented Generation (RAG)** pipeline designed for enterprise document question-answering. Built with **Hybrid Search (Dense + BM25)**, **Reciprocal Rank Fusion (RRF)**, **Cross-Encoder Neural Reranking (FlashRank)**, **Query Transformations (Rewriting & HyDE)**, and **Strict Evidence Grounding** with source citations.
+
+---
+
+## 📌 Table of Contents
+- [Architecture Overview](#-architecture-overview)
+- [Key Features](#-key-features)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+  - [Running the Assistant](#running-the-assistant)
+- [CLI Commands & Features](#-cli-commands--features)
+- [How It Works (Under the Hood)](#-how-it-works-under-the-hood)
+- [Future Roadmap](#-future-roadmap)
+
+---
+
+## 🏛️ Architecture Overview
+
+The system processes enterprise documents (PDFs) into semantic vector chunks and lexical indices, using a multi-stage retrieval and ranking pipeline to deliver grounded, hallucination-free answers:
+
+```
+                    ┌─────────────────────────┐
+                    │  Enterprise Source PDFs │
+                    └────────────┬────────────┘
+                                 │
+                     [PyPDFLoader + Chunking]
+                                 │
+                   ┌─────────────┴─────────────┐
+                   │                           │
+          [Gemini Embeddings]          [BM25 Indexing]
+                   │                           │
+                   ▼                           ▼
+          ┌─────────────────┐         ┌─────────────────┐
+          │  Qdrant Vector  │         │  BM25 Lexical   │
+          │   Store (Dense) │         │ Retriever (Doc) │
+          └────────┬────────┘         └────────┬────────┘
+                   │                           │
+                   │   User Query / HyDE       │
+                   ├───────────────────────────┤
+                   ▼                           ▼
+          Top-K Dense Chunks           Top-K Lexical Chunks
+                   │                           │
+                   └─────────────┬─────────────┘
+                                 │
+                   [Reciprocal Rank Fusion (RRF)]
+                                 │
+                     Fused Candidate Pool
+                                 │
+                   [FlashRank Neural Reranker]
+                                 │
+                      Top-N Re-scored Chunks
+                                 │
+                     [Strict Grounding Prompt]
+                                 │
+                     [Google Gemini LLM]
+                                 │
+                                 ▼
+                     Grounded Answer + Citations
+```
+
+---
+
+## ✨ Key Features
+
+- **Hybrid Search (Dense + Lexical)**: Combines semantic vector similarity (Qdrant + Gemini Embeddings) with exact keyword matching (BM25) to catch both high-level context and specific technical terms, IDs, and acronyms.
+- **Reciprocal Rank Fusion (RRF)**: Merges disparate rankings from dense and sparse retrievers without score scale bias using the proven formula:
+  $$\text{RRF Score} = \sum_{m \in M} \frac{1}{k + r_m(d)}$$
+- **Cross-Encoder Candidate Reranking**: Uses local `FlashRank` (TinyBERT cross-encoder) to re-evaluate query-passage relevance with full cross-attention, drastically reducing false positives.
+- **Query Transformations**:
+  - **Query Rewriting**: Expands conversational or ambiguous queries into search-optimized technical keywords.
+  - **HyDE (Hypothetical Document Embeddings)**: Generates a hypothetical ideal response before embedding to retrieve documents closer in semantic vector space.
+- **Strict Evidence Grounding**: Anti-hallucination prompts mandate answers derived *only* from retrieved snippets, with explicit abstention when evidence is missing.
+- **Traceable Source Citations**: Every generated fact is referenced with its source document name and page number.
+- **Side-by-Side Comparison Tool**: Built-in CLI `compare` mode to evaluate Dense vs. BM25 vs. Hybrid vs. Reranked outputs in real-time.
+- **Metadata Filtering**: Query-time filtering by document filename (`source=notes.pdf | <query>`).
+
+---
+
+## 🛠️ Tech Stack
+
+| Component | Technology | Role |
+| :--- | :--- | :--- |
+| **LLM Engine** | Google Gemini (`gemini-flash-lite-latest` / `gemini-3.8-flash`) | Context synthesis, answer generation & query transformation |
+| **Embedding Model** | Google Gemini Embeddings (`gemini-embedding-001`, 3072-dim) | Dense vector generation |
+| **Vector Database** | Qdrant (`qdrant-client`, `langchain-qdrant`) | Local embedded high-performance vector search |
+| **Lexical Search** | BM25 (`rank-bm25`, `langchain-community`) | Token-frequency exact keyword retrieval |
+| **Neural Reranker** | FlashRank (`flashrank` with TinyBERT) | Cross-encoder candidate re-scoring |
+| **Document Processing**| PyPDF (`pypdf`), LangChain Text Splitters | PDF parsing, chunking with overlap |
+| **Configuration** | `python-dotenv` | Secure API key & environment management |
+
+---
+
+## 📁 Project Structure
+
+```bash
+Enterprise_RAG_Assistant/
+├── backend/
+│   ├── data/                 # Source enterprise documents (PDFs)
+│   │   └── notes.pdf
+│   ├── qdrant_db/            # Local persistent Qdrant vector storage
+│   ├── venv/                 # Python virtual environment
+│   ├── .env                  # API keys and environment variables (ignored in git)
+│   ├── .gitignore            # Git exclusion rules
+│   ├── main.py               # Complete end-to-end RAG pipeline & CLI
+│   └── requirements.txt      # Python dependencies
+└── README.md                 # Project documentation
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Python 3.10+ (Tested up to Python 3.14)
+- Google Gemini API Key ([Get a free key from Google AI Studio](https://aistudio.google.com/))
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/parvezs2442/enterprise_rag_assistant.git
+   cd enterprise_rag_assistant/backend
+   ```
+
+2. **Create and activate a virtual environment:**
+   - **Windows:**
+     ```powershell
+     python -m venv venv
+     .\venv\Scripts\activate
+     ```
+   - **Linux / macOS:**
+     ```bash
+     python3 -m venv venv
+     source venv/bin/activate
+     ```
+
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+### Configuration
+
+Create a `.env` file inside the `backend/` directory:
+
+```env
+GOOGLE_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL=gemini-flash-lite-latest
+EMBEDDING_MODEL=models/gemini-embedding-001
+```
+
+Place any PDF documents you want to query inside the `backend/data/` folder.
+
+---
+
+## 💻 Running the Assistant
+
+Run the interactive CLI application:
+
+```powershell
+python main.py
+```
+
+On first launch, it will:
+1. Parse all PDFs in `backend/data/`.
+2. Chunk text with recursive character splitting (500 chars, 100 overlap).
+3. Compute 3072-dim embeddings and index them in local Qdrant storage.
+4. Build the BM25 token index.
+5. Initialize FlashRank TinyBERT cross-encoder model.
+
+---
+
+## 🎯 CLI Commands & Features
+
+Once running, you can use these interactive commands:
+
+| Command | Example | Description |
+| :--- | :--- | :--- |
+| **Standard Query** | `What is RAG and why is it used?` | Runs Hybrid Search + RRF + FlashRank reranking + grounded answer. |
+| **Compare Strategies** | `compare What is vector database?` | Evaluates Dense vs BM25 vs Hybrid vs Reranked top results side-by-side. |
+| **Query Rewriting** | `rewrite rag kyu use krte h` | Rewrites the query using LLM before search to improve retrieval. |
+| **HyDE Search** | `hyde What are chunking strategies?` | Generates a hypothetical passage and searches using its vector. |
+| **Metadata Filter** | `source=notes.pdf \| What is BM25?` | Restricts search strictly to chunks originating from `notes.pdf`. |
+| **Exit** | `exit` or `quit` | Closes the CLI session. |
+
+---
+
+## 🔍 How It Works (Under the Hood)
+
+### 1. Ingestion & Chunking
+Documents are loaded page-by-page. Pages are split into overlapping chunks (500 characters, 100 character overlap) to preserve context across boundaries while avoiding overly long embedding vectors. Each chunk retains metadata: `source`, `page`, and `chunk_id`.
+
+### 2. Dual Retrieval (Hybrid)
+- **Dense Vector Search**: Measures cosine distance between query embedding and chunk vectors in Qdrant. Great for synonyms and semantic concepts.
+- **BM25 Lexical Search**: Uses token frequency statistics (TF-IDF based) to match exact keywords, model names, and IDs that embeddings might overlook.
+
+### 3. Reciprocal Rank Fusion (RRF)
+Combines candidates from both retrieval channels by ranking position rather than raw scores:
+```python
+scores[doc_id] += 1.0 / (60 + rank + 1)
+```
+
+### 4. FlashRank Neural Reranking
+Passes top fused candidates through `ms-marco-TinyBERT-L-2-v2`. Unlike bi-encoders (which encode query and passage independently), cross-encoders process query and passage together, catching subtle semantic relationships.
+
+### 5. Grounded Generation & Citation
+The top reranked chunks are formatted into structured context blocks. Gemini is prompted with strict instruction:
+- Answer *only* using supplied facts.
+- Explicitly state if information is missing.
+- Include source filename and page numbers for traceable accountability.
+
+---
+
+## 🗺️ Future Roadmap
+
+- [ ] **FastAPI REST Endpoints**: Expose ingestion and chat as typed REST API routes.
+- [ ] **Next.js Frontend**: Modern chat interface with citation preview popups and document upload.
+- [ ] **Automated Evaluation**: Golden dataset testing with RAGAS metrics (Faithfulness, Answer Relevance, Context Recall).
+- [ ] **PostgreSQL Metadata Storage**: Multi-user permissions, conversation history, and role-based access control (RBAC).
+
+---
+
+## 📄 License
+This project is licensed under the MIT License.
