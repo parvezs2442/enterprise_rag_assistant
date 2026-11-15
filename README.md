@@ -103,19 +103,28 @@ The system processes enterprise documents (PDFs) into semantic vector chunks and
 ```bash
 Enterprise_RAG_Assistant/
 ├── backend/
-│   ├── data/                 # Source enterprise documents (PDFs)
+│   ├── app/                      # Enterprise Modular Package
+│   │   ├── core/                 # Configuration & settings management
+│   │   ├── ingestion/            # PDF parsing, document discovery & chunking
+│   │   ├── embeddings/           # Gemini vector embeddings adapter
+│   │   ├── retrieval/            # Qdrant (Dense), BM25 (Sparse), RRF, & FlashRank
+│   │   ├── query/                # Query rewriting & HyDE generators
+│   │   ├── generation/           # Prompt-injection defense, citations, & LLM generator
+│   │   ├── evaluation/           # Retrieval metrics, LLM-as-a-Judge, & benchmark runner
+│   │   └── pipeline.py           # Unified EnterpriseRAGPipeline orchestrator
+│   ├── data/                     # Source enterprise documents (PDFs)
 │   │   └── notes.pdf
-│   ├── evals/                # Phase 10 Evaluation resources & outputs
-│   │   ├── golden_dataset.json # Ground truth benchmark test cases
-│   │   └── eval_report.json    # Exported evaluation metrics & runs
-│   ├── qdrant_db/            # Local persistent Qdrant vector storage
-│   ├── venv/                 # Python virtual environment
-│   ├── .env                  # API keys and environment variables (ignored in git)
-│   ├── .gitignore            # Git exclusion rules
-│   ├── evaluate.py           # Phase 10 Evaluation & LLM-as-a-Judge script
-│   ├── main.py               # Complete end-to-end RAG pipeline & CLI
-│   └── requirements.txt      # Python dependencies
-└── README.md                 # Project documentation
+│   ├── evals/                    # Evaluation resources & benchmark reports
+│   │   ├── golden_dataset.json   # Ground-truth test dataset
+│   │   └── eval_report.json      # Benchmark evaluation metrics output
+│   ├── qdrant_db/                # Local persistent Qdrant vector storage
+│   ├── venv/                     # Python virtual environment
+│   ├── .env                      # API keys & environment variables (git-ignored)
+│   ├── .gitignore                # Git exclusion rules
+│   ├── main.py                   # Clean application CLI entrypoint
+│   ├── evaluate.py               # Standalone evaluation benchmark entrypoint
+│   └── requirements.txt          # Python dependencies
+└── README.md                     # Project documentation
 ```
 
 ---
