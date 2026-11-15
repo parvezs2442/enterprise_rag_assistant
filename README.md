@@ -75,7 +75,9 @@ The system processes enterprise documents (PDFs) into semantic vector chunks and
 - **Query Transformations**:
   - **Query Rewriting**: Expands conversational or ambiguous queries into search-optimized technical keywords.
   - **HyDE (Hypothetical Document Embeddings)**: Generates a hypothetical ideal response before embedding to retrieve documents closer in semantic vector space.
-- **Strict Evidence Grounding**: Anti-hallucination prompts mandate answers derived *only* from retrieved snippets, with explicit abstention when evidence is missing.
+- **Strict Evidence Grounding & Prompt Injection Defense**: Untrusted context is fenced inside secure XML boundaries (`<untrusted_document>`). The system neutralizes instruction overrides and abstains when evidence is missing.
+- **Automated Citation Verification Engine**: Answers must tag claims with `[DOC-X]`. A post-generation verification engine detects and flags hallucinated or orphaned citations.
+- **Automated Evaluation Suite (LLM-as-a-Judge)**: Includes a versioned golden dataset (`evals/golden_dataset.json`) and benchmark runner (`evaluate.py`) calculating Hit@k, MRR, Faithfulness, Relevance, and Abstention accuracy.
 - **Traceable Source Citations**: Every generated fact is referenced with its source document name and page number.
 - **Side-by-Side Comparison Tool**: Built-in CLI `compare` mode to evaluate Dense vs. BM25 vs. Hybrid vs. Reranked outputs in real-time.
 - **Metadata Filtering**: Query-time filtering by document filename (`source=notes.pdf | <query>`).
@@ -103,10 +105,14 @@ Enterprise_RAG_Assistant/
 ├── backend/
 │   ├── data/                 # Source enterprise documents (PDFs)
 │   │   └── notes.pdf
+│   ├── evals/                # Phase 10 Evaluation resources & outputs
+│   │   ├── golden_dataset.json # Ground truth benchmark test cases
+│   │   └── eval_report.json    # Exported evaluation metrics & runs
 │   ├── qdrant_db/            # Local persistent Qdrant vector storage
 │   ├── venv/                 # Python virtual environment
 │   ├── .env                  # API keys and environment variables (ignored in git)
 │   ├── .gitignore            # Git exclusion rules
+│   ├── evaluate.py           # Phase 10 Evaluation & LLM-as-a-Judge script
 │   ├── main.py               # Complete end-to-end RAG pipeline & CLI
 │   └── requirements.txt      # Python dependencies
 └── README.md                 # Project documentation
@@ -187,6 +193,8 @@ Once running, you can use these interactive commands:
 | **Query Rewriting** | `rewrite rag kyu use krte h` | Rewrites the query using LLM before search to improve retrieval. |
 | **HyDE Search** | `hyde What are chunking strategies?` | Generates a hypothetical passage and searches using its vector. |
 | **Metadata Filter** | `source=notes.pdf \| What is BM25?` | Restricts search strictly to chunks originating from `notes.pdf`. |
+| **Run Benchmark** | `eval` | Runs Phase 10 automated evaluation against the golden dataset. |
+| **Security Test** | `security_test` | Tests Phase 9 adversarial prompt-injection defense mechanisms. |
 | **Exit** | `exit` or `quit` | Closes the CLI session. |
 
 ---

@@ -1,0 +1,89 @@
+{
+  "timestamp": "2026-11-15 22:13:42",
+  "model_evaluated": "gemini-flash-lite-latest",
+  "embedding_model": "models/gemini-embedding-001",
+  "metrics_summary": {
+    "baseline": {
+      "hit_rate_at_4": 100.0,
+      "mrr": 1.0,
+      "avg_faithfulness": 100.0,
+      "avg_relevance": 100.0,
+      "abstention_accuracy": 100.0,
+      "avg_latency_sec": 1.83
+    },
+    "tuned": {
+      "hit_rate_at_4": 100.0,
+      "mrr": 1.0,
+      "avg_faithfulness": 100.0,
+      "avg_relevance": 100.0,
+      "abstention_accuracy": 100.0,
+      "avg_latency_sec": 3.04
+    }
+  },
+  "test_case_results": {
+    "baseline": [
+      {
+        "id": "gold-01",
+        "type": "answerable_factual",
+        "hit": 1.0,
+        "rr": 1.0,
+        "faithfulness": 1.0,
+        "relevance": 1.0,
+        "abstention_correct": true,
+        "latency_sec": 1.745
+      },
+      {
+        "id": "gold-02",
+        "type": "answerable_factual",
+        "hit": 1.0,
+        "rr": 1.0,
+        "faithfulness": 1.0,
+        "relevance": 1.0,
+        "abstention_correct": true,
+        "latency_sec": 1.689
+      },
+      {
+        "id": "gold-03",
+        "type": "answerable_conceptual",
+        "hit": 1.0,
+        "rr": 1.0,
+        "faithfulness": 1.0,
+        "relevance": 1.0,
+        "abstention_correct": true,
+        "latency_sec": 2.045
+      }
+    ],
+    "tuned": [
+      {
+        "id": "gold-01",
+        "type": "answerable_factual",
+        "hit": 1.0,
+        "rr": 1.0,
+        "faithfulness": 1.0,
+        "relevance": 1.0,
+        "abstention_correct": true,
+        "latency_sec": 3.247
+      },
+      {
+        "id": "gold-02",
+        "type": "answerable_factual",
+        "hit": 1.0,
+        "rr": 1.0,
+        "faithfulness": 1.0,
+        "relevance": 1.0,
+        "abstention_correct": true,
+        "latency_sec": 2.652
+      },
+      {
+        "id": "gold-03",
+        "type": "answerable_conceptual",
+        "hit": 1.0,
+        "rr": 1.0,
+        "faithfulness": 1.0,
+        "relevance": 1.0,
+        "abstention_correct": true,
+        "latency_sec": 3.209
+      }
+    ]
+  }
+}
