@@ -34,8 +34,11 @@ Question: {query}
 
 Answer:"""
 
-    response = client.models.generate_content(
-        model=settings.gemini_chat_model,
-        contents=f"{system_prompt}\n\n{user_prompt}"
-    )
-    return response.text.strip()
+    try:
+        response = client.models.generate_content(
+            model=settings.gemini_chat_model,
+            contents=f"{system_prompt}\n\n{user_prompt}"
+        )
+        return response.text.strip()
+    except Exception as e:
+        return f"[Gemini API Error - {type(e).__name__}]: {e}\n\nℹ️ Please check your GOOGLE_API_KEY in backend/.env (Get a key from https://aistudio.google.com)."

@@ -94,13 +94,17 @@ class EnterpriseRAGPipeline:
             semantic_target = hypo
             print(f" [HyDE Target] -> '{hypo[:80]}...'")
 
-        # 1. Lexical search
+        # 1. Lexical search (BM25)
         bm25_docs = self.bm25_search(search_query, k=settings.bm25_k, source_filter=source_filter)
 
-        # 2. Dense semantic search
-        dense_docs = self.dense_search(semantic_target, k=settings.dense_k, source_filter=source_filter)
+        # 2. Dense semantic search (Qdrant with fallback on API restriction/offline)
+        try:
+            dense_docs = self.dense_search(semantic_target, k=settings.dense_k, source_filter=source_filter)
+        except Exception as e:
+            print(f" [Pipeline Retrieval Notice] Dense search unavailable ({e}). Falling back to lexical BM25.")
+            dense_docs = []
 
-        # 3. Reciprocal Rank Fusion
+        # 3. Reciprocal Rank Fusion (RRF)
         fused = reciprocal_rank_fusion([dense_docs, bm25_docs], k=settings.rrf_k)
 
         # 4. Neural Cross-Encoder Reranking

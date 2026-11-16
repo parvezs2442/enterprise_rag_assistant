@@ -28,7 +28,8 @@ def init_vector_store(
             documents=chunks,
             embedding=embeddings,
             path=settings.qdrant_path,
-            collection_name=settings.collection_name
+            collection_name=settings.collection_name,
+            validate_collection_config=False
         )
         print(" -> Qdrant collection indexed successfully!")
     else:
@@ -36,7 +37,8 @@ def init_vector_store(
         vectorstore = QdrantVectorStore.from_existing_collection(
             embedding=embeddings,
             path=settings.qdrant_path,
-            collection_name=settings.collection_name
+            collection_name=settings.collection_name,
+            validate_collection_config=False
         )
         print(" -> Qdrant collection loaded.")
 

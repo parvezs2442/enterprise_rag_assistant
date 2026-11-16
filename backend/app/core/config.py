@@ -1,8 +1,17 @@
 import os
+from pathlib import Path
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
-load_dotenv()
+# Base backend directory: backend/
+BACKEND_DIR = Path(__file__).resolve().parent.parent.parent
+
+# Load .env from cwd or backend directory
+env_path = BACKEND_DIR / ".env"
+if env_path.exists():
+    load_dotenv(dotenv_path=env_path)
+else:
+    load_dotenv()
 
 class Settings(BaseModel):
     # API Keys & Providers
@@ -10,9 +19,9 @@ class Settings(BaseModel):
     gemini_chat_model: str = Field(default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-flash-lite-latest"))
     gemini_embed_model: str = Field(default_factory=lambda: os.getenv("EMBEDDING_MODEL", "models/gemini-embedding-001"))
 
-    # Storage Paths
-    data_path: str = "data"
-    qdrant_path: str = "./qdrant_db"
+    # Storage Paths (auto-resolves correctly regardless of execution CWD)
+    data_path: str = Field(default_factory=lambda: str(BACKEND_DIR / "data"))
+    qdrant_path: str = Field(default_factory=lambda: str(BACKEND_DIR / "qdrant_db"))
     collection_name: str = "enterprise_rag_notes"
 
     # Chunking Hyperparameters
