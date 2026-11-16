@@ -26,8 +26,8 @@ def main():
     print(" • rewrite <query>          : Optimize and expand query before search")
     print(" • hyde <query>             : Use Hypothetical Document Embeddings (HyDE)")
     print(" • source=file.pdf | <query>: Restrict search to specific document")
-    print(" • eval                     : Run Phase 10 automated evaluation benchmark")
-    print(" • security_test            : Run Phase 9 prompt-injection defense audit")
+    print(" • eval                     : Run automated quality evaluation benchmark")
+    print(" • security_test            : Run prompt-injection defense audit")
     print(" • exit                     : Quit")
     print("-" * 70)
 
@@ -45,17 +45,17 @@ def main():
             print("Goodbye!")
             break
 
-        # Command: Evaluation Suite (Phase 10)
+        # Command: Quality Evaluation Suite
         if user_input.lower() == "eval":
             run_evaluation_benchmark(pipeline)
             continue
 
-        # Command: Security Audit (Phase 9)
+        # Command: Security Guardrails Audit
         if user_input.lower() == "security_test":
             pipeline.run_security_audit()
             continue
 
-        # Command: Retrieval Comparison (Phase 8)
+        # Command: Retrieval Strategy Comparison
         if user_input.startswith("compare "):
             query = user_input.replace("compare ", "").strip()
             pipeline.compare_strategies(query)
@@ -91,14 +91,14 @@ def main():
         print("[Generating grounded answer with Gemini...]")
         answer = pipeline.generate_answer(query, retrieved_docs)
 
-        # Citation Verification (Phase 9)
+        # Citation Verification Engine
         citation_info = pipeline.verify_citations(answer, retrieved_docs)
 
         print("\n" + "="*50 + " AI ANSWER " + "="*50)
         print(answer)
         print("="*111)
 
-        print("\n[Phase 9 Citation Verification]")
+        print("\n[Citation Verification Audit]")
         if citation_info["is_citation_valid"] and citation_info["valid_citations"]:
             print(f"  All citations valid: {citation_info['valid_citations']} (Precision: 100%)")
             for cid in citation_info["valid_citations"]:

@@ -11,9 +11,9 @@ GOLDEN_DATASET_PATH = "evals/golden_dataset.json"
 REPORT_OUTPUT_PATH = "evals/eval_report.json"
 
 def run_evaluation_benchmark(pipeline, max_cases: int = 4):
-    """Phase 10 Evaluation Suite runner."""
+    """Evaluation Suite runner."""
     print("\n" + "="*80)
-    print("      ENTERPRISE RAG ASSISTANT - PHASE 10 EVALUATION SUITE")
+    print("      ENTERPRISE RAG ASSISTANT - QUALITY EVALUATION SUITE")
     print("="*80)
 
     if not os.path.exists(GOLDEN_DATASET_PATH):
@@ -117,7 +117,7 @@ def run_evaluation_benchmark(pipeline, max_cases: int = 4):
     agg_tuned = aggregate(results_tuned)
 
     print("\n" + "="*80)
-    print("                 PHASE 10 EVALUATION REPORT SUMMARY")
+    print("                 BENCHMARK EVALUATION REPORT SUMMARY")
     print("="*80)
     print(f"{'Metric':<35} | {'Baseline (Dense)':<20} | {'Tuned (Hybrid + Rerank)':<22}")
     print("-" * 80)

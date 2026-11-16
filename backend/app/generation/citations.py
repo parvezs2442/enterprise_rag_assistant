@@ -4,7 +4,7 @@ from langchain_core.documents import Document
 
 def verify_citations(answer: str, documents: List[Document]) -> Dict[str, Any]:
     """
-    Phase 9 Citation Verification Engine:
+    Deterministic Citation Verification Engine:
     - Answer se [DOC-X] tags ko extract karta hai.
     - Check karta hai ki kya har cited ID real retrieved documents se match karta hai.
     - Hallucinated / Fake citations ko flag karta hai.

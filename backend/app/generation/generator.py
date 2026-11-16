@@ -6,7 +6,7 @@ from app.generation.security import format_context_with_fences
 
 def generate_grounded_answer(query: str, documents: List[Document]) -> str:
     """
-    Phase 9 Strict Evidence-Grounded Generator:
+    Strict Evidence-Grounded Generator:
     - Context vs instruction separation
     - Mandatory [DOC-X] citation tagging
     - Safe abstention on missing evidence or out-of-domain queries
