@@ -88,6 +88,8 @@ The system processes enterprise documents (PDFs) into semantic vector chunks and
 
 | Component | Technology | Role |
 | :--- | :--- | :--- |
+| **Frontend UI** | React 19, TypeScript, Vite, Tailwind CSS v4, Lucide Icons | Interactive chat, strategy comparison, evaluation dashboard & document management |
+| **Backend API** | Python, FastAPI, Uvicorn, Pydantic | Typed REST endpoints, file upload, orchestration & security |
 | **LLM Engine** | Google Gemini (`gemini-flash-lite-latest` / `gemini-3.8-flash`) | Context synthesis, answer generation & query transformation |
 | **Embedding Model** | Google Gemini Embeddings (`gemini-embedding-001`, 3072-dim) | Dense vector generation |
 | **Vector Database** | Qdrant (`qdrant-client`, `langchain-qdrant`) | Local embedded high-performance vector search |
@@ -102,7 +104,7 @@ The system processes enterprise documents (PDFs) into semantic vector chunks and
 
 ```bash
 Enterprise_RAG_Assistant/
-├── backend/
+├── backend/                      # Production Python Backend
 │   ├── app/                      # Enterprise Modular Package
 │   │   ├── core/                 # Configuration & settings management
 │   │   ├── ingestion/            # PDF parsing, document discovery & chunking
@@ -121,9 +123,17 @@ Enterprise_RAG_Assistant/
 │   ├── venv/                     # Python virtual environment
 │   ├── .env                      # API keys & environment variables (git-ignored)
 │   ├── .gitignore                # Git exclusion rules
+│   ├── server.py                 # FastAPI REST API server
 │   ├── main.py                   # Clean application CLI entrypoint
 │   ├── evaluate.py               # Standalone evaluation benchmark entrypoint
 │   └── requirements.txt          # Python dependencies
+├── frontend/                     # Modern React + TypeScript + Tailwind UI
+│   ├── src/
+│   │   ├── App.tsx               # Main UI (Chat, Comparison, Eval Dashboard, Security, Docs)
+│   │   ├── index.css             # Tailwind CSS styles
+│   │   └── main.tsx              # React DOM entrypoint
+│   ├── package.json              # Frontend dependencies
+│   └── vite.config.ts            # Vite proxy configuration to backend API (:8000)
 └── README.md                     # Project documentation
 ```
 
@@ -176,9 +186,31 @@ Place any PDF documents you want to query inside the `backend/data/` folder.
 
 ## 💻 Running the Assistant
 
-Run the interactive CLI application:
+### Option A: Full-Stack Web Application (Recommended)
+
+1. **Start the FastAPI Backend Server:**
+   ```powershell
+   cd backend
+   .\venv\Scripts\activate
+   python -m uvicorn server:app --reload --port 8000
+   ```
+   *The backend REST API and interactive Swagger docs will run at `http://127.0.0.1:8000/docs`.*
+
+2. **Start the React Frontend:**
+   ```powershell
+   cd frontend
+   pnpm dev
+   ```
+   *Open your browser at `http://localhost:5173` to access the full web UI.*
+
+---
+
+### Option B: Interactive Terminal CLI
+
+Run the direct CLI application:
 
 ```powershell
+cd backend
 python main.py
 ```
 
