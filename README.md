@@ -234,8 +234,8 @@ Once running, you can use these interactive commands:
 | **Query Rewriting** | `rewrite rag kyu use krte h` | Rewrites the query using LLM before search to improve retrieval. |
 | **HyDE Search** | `hyde What are chunking strategies?` | Generates a hypothetical passage and searches using its vector. |
 | **Metadata Filter** | `source=notes.pdf \| What is BM25?` | Restricts search strictly to chunks originating from `notes.pdf`. |
-| **Run Benchmark** | `eval` | Runs Phase 10 automated evaluation against the golden dataset. |
-| **Security Test** | `security_test` | Tests Phase 9 adversarial prompt-injection defense mechanisms. |
+| **Run Benchmark** | `eval` | Runs automated quality evaluation benchmark against the golden dataset. |
+| **Security Test** | `security_test` | Tests adversarial prompt-injection defense mechanisms. |
 | **Exit** | `exit` or `quit` | Closes the CLI session. |
 
 ---
