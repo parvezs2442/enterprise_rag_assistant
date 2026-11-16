@@ -7,6 +7,8 @@ An advanced, production-grade **Retrieval-Augmented Generation (RAG)** pipeline 
 ## 📌 Table of Contents
 - [Architecture Overview](#-architecture-overview)
 - [Key Features](#-key-features)
+- [Full-Stack Web Dashboard](#-full-stack-web-dashboard)
+- [REST API Endpoints](#-rest-api-endpoints)
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
 - [Getting Started](#-getting-started)
@@ -84,6 +86,35 @@ The system processes enterprise documents (PDFs) into semantic vector chunks and
 
 ---
 
+## 🖥️ Full-Stack Web Dashboard
+
+The web interface (`frontend/`) is built with React 19, TypeScript, and Tailwind CSS v4, providing an intuitive command center for enterprise knowledge:
+
+1. **💬 Assistant (Chat)**: Real-time grounded conversation with interactive citation pills (`[DOC-1] notes.pdf p.2`), collapsible source passage inspectors, and response latency tracking.
+2. **⚖️ Search Analytics**: 4-way side-by-side comparison of Vector Semantic Search (Qdrant), Lexical Keyword Search (BM25), Hybrid Fusion (RRF), and Neural Cross-Encoder Reranking (FlashRank).
+3. **📊 Quality Benchmarks**: Continuous automated evaluation dashboard reporting Hit Rate @ 4, MRR, Faithfulness (Anti-Hallucination), Answer Relevance, and Safe Abstention.
+4. **🛡️ Security Guardrails**: Live adversarial prompt-injection simulation and XML context isolation auditing.
+5. **📁 Knowledge Base**: PDF upload and document repository management with automatic chunking and vector indexing.
+
+---
+
+## 🔌 REST API Endpoints
+
+The FastAPI backend (`backend/server.py`) provides fully typed, production-ready REST endpoints:
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/chat` | Runs full hybrid retrieval + FlashRank reranking + grounded generation + citations. |
+| `POST` | `/api/compare` | Returns side-by-side retrieved passages across all 4 retrieval strategies. |
+| `POST` | `/api/upload` | Uploads PDF files and triggers automatic chunking and indexing. |
+| `GET` | `/api/documents` | Lists all active ingested PDF documents in the knowledge base. |
+| `GET` | `/api/evaluation` | Returns the latest automated benchmark evaluation metrics from disk. |
+| `POST` | `/api/evaluation/run` | Triggers a live evaluation run against golden test cases with LLM-as-a-Judge. |
+| `POST` | `/api/security-test` | Runs adversarial prompt-injection attack simulation. |
+| `GET` | `/api/health` | Health check reporting active models, indexed chunk count, and data paths. |
+
+---
+
 ## 🛠️ Tech Stack
 
 | Component | Technology | Role |
@@ -143,6 +174,7 @@ Enterprise_RAG_Assistant/
 
 ### Prerequisites
 - Python 3.10+ (Tested up to Python 3.14)
+- Node.js 18+ and pnpm (or npm)
 - Google Gemini API Key ([Get a free key from Google AI Studio](https://aistudio.google.com/))
 
 ### Installation
@@ -150,24 +182,29 @@ Enterprise_RAG_Assistant/
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/parvezs2442/enterprise_rag_assistant.git
-   cd enterprise_rag_assistant/backend
+   cd enterprise_rag_assistant
    ```
 
-2. **Create and activate a virtual environment:**
+2. **Backend Setup:**
    - **Windows:**
      ```powershell
+     cd backend
      python -m venv venv
      .\venv\Scripts\activate
+     pip install -r requirements.txt
      ```
    - **Linux / macOS:**
      ```bash
+     cd backend
      python3 -m venv venv
      source venv/bin/activate
+     pip install -r requirements.txt
      ```
 
-3. **Install dependencies:**
+3. **Frontend Setup:**
    ```bash
-   pip install -r requirements.txt
+   cd ../frontend
+   pnpm install
    ```
 
 ### Configuration
@@ -268,10 +305,11 @@ The top reranked chunks are formatted into structured context blocks. Gemini is 
 
 ## 🗺️ Future Roadmap
 
-- [ ] **FastAPI REST Endpoints**: Expose ingestion and chat as typed REST API routes.
-- [ ] **Next.js Frontend**: Modern chat interface with citation preview popups and document upload.
-- [ ] **Automated Evaluation**: Golden dataset testing with RAGAS metrics (Faithfulness, Answer Relevance, Context Recall).
-- [ ] **PostgreSQL Metadata Storage**: Multi-user permissions, conversation history, and role-based access control (RBAC).
+- [x] **FastAPI REST Endpoints**: Typed REST API routes with CORS, document upload, and Swagger docs.
+- [x] **Full-Stack Web Dashboard**: Modern single-page React 19 + TypeScript + Tailwind UI with citation inspection.
+- [x] **Automated Evaluation Suite**: Golden dataset benchmark testing with LLM-as-a-Judge (Hit@k, MRR, Faithfulness, Relevance, Safe Abstention).
+- [ ] **PostgreSQL Metadata Storage**: Multi-user permissions, persistent conversation history, and role-based access control (RBAC).
+- [ ] **Multi-Modal Vision RAG**: Visual table, chart, and diagram extraction from enterprise presentations and scanned PDFs.
 
 ---
 
